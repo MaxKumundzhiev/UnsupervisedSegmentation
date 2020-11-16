@@ -111,25 +111,33 @@ class DatasetProcessor:
         except Exception as e:
             print(f'[SILENCED] Error: {e} occurred for {original_path}')
 
-    def generate_dataset(self, nii_paths, nrrd_paths):
+    def generate_data(self, nii_paths, nrrd_paths):
         for index, (nii, nrrd) in enumerate(tqdm(zip(nii_paths, nrrd_paths))):
 
             target_folder_path = f'{self.target_path}/{index}'
             target_folder_original = f'{target_folder_path}/original'
             target_folder_segmented = f'{target_folder_path}/segmented'
 
-            os.mkdir(target_folder_path)
-            os.mkdir(target_folder_original)
-            os.mkdir(target_folder_segmented)
+            if not os.path.exists(target_folder_path):
+                os.mkdir(target_folder_path)
+                os.mkdir(target_folder_original)
+                os.mkdir(target_folder_segmented)
 
             nii_rows = self.process_nii(original_path=nii, target_folder=target_folder_original, index=index)
             nrrd_rows = self.process_nrrd(original_path=nrrd, target_folder=target_folder_segmented, index=index)
 
-            result_df = pd.DataFrame
+        return nii_rows, nrrd_rows
+
+    def create_df(self, nii_rows, nrrd_rows):
+        result = pd.DataFrame.from_dict(nii_rows)
+        result = pd.concat([result, pd.DataFrame(nrrd_rows)], axis=1)
+        result.to_csv('./patients.csv')
+        return result
 
     def run(self):
         nii_records, nrrd_records = self.validate_records()
-        self.generate_dataset(nii_paths=nii_records, nrrd_paths=nrrd_records)
+        nii_rows, nrrd_rows = self.generate_data(nii_paths=nii_records, nrrd_paths=nrrd_records)
+        df = self.create_df(nii_rows, nrrd_rows)
 
 
 
