@@ -112,8 +112,10 @@ class DatasetProcessor:
             print(f'[SILENCED] Error: {e} occurred for {original_path}')
 
     def generate_data(self, nii_paths, nrrd_paths):
-        for index, (nii, nrrd) in enumerate(tqdm(zip(nii_paths, nrrd_paths))):
+        nii_df = pd.DataFrame()
+        nrrd_df = pd.DataFrame()
 
+        for index, (nii, nrrd) in enumerate(tqdm(zip(nii_paths, nrrd_paths))):
             target_folder_path = f'{self.target_path}/{index}'
             target_folder_original = f'{target_folder_path}/original'
             target_folder_segmented = f'{target_folder_path}/segmented'
@@ -124,21 +126,19 @@ class DatasetProcessor:
                 os.mkdir(target_folder_segmented)
 
             nii_rows = self.process_nii(original_path=nii, target_folder=target_folder_original, index=index)
+            nii_df = pd.concat([nii_df, pd.DataFrame(nii_rows)], axis=0, ignore_index=True)
+
             nrrd_rows = self.process_nrrd(original_path=nrrd, target_folder=target_folder_segmented, index=index)
+            nrrd_df = pd.concat([nrrd_df, pd.DataFrame(nrrd_rows)], axis=0, ignore_index=True)
 
-        return nii_rows, nrrd_rows
-
-    def create_df(self, nii_rows, nrrd_rows):
-        result = pd.DataFrame.from_dict(nii_rows)
-        result = pd.concat([result, pd.DataFrame(nrrd_rows)], axis=1)
-        result.to_csv('./patients.csv')
-        return result
+        result_df = pd.concat([nii_df, nrrd_df], axis=1)
+        result_df.to_csv('./patients.csv')
+        return result_df
 
     def run(self):
         nii_records, nrrd_records = self.validate_records()
-        nii_rows, nrrd_rows = self.generate_data(nii_paths=nii_records, nrrd_paths=nrrd_records)
-
-        return self.create_df(nii_rows, nrrd_rows)
+        df = self.generate_data(nii_paths=nii_records, nrrd_paths=nrrd_records)
+        return df
 
 
 
