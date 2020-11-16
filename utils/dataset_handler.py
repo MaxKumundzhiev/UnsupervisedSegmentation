@@ -67,13 +67,11 @@ class DatasetProcessor:
                     scipy.misc.imsave(f'{target_folder}/{slice_index}_original.jpg', slice_context)
 
                     buffer_row = {
-                        'record_index': index,
-                        'record_path': target_folder,
-                        'record_class': 'nii',
+                        'patient_index': index,
+                        'original_record_path': target_folder,
                         'slice_index': slice_index,
-                        'slice_context': slice_context,
-                        'slice_resolution': slice_resolution,
-                        'slice_size': slice_context.shape,
+                        'original_slice_context': slice_context,
+                        'original_slice_resolution': slice_resolution,
                     }
                     rows.append(buffer_row)
             return rows
@@ -96,13 +94,9 @@ class DatasetProcessor:
                     scipy.misc.imsave(f'{target_folder}/{slice_index}_segmented.jpg', slice_context)
 
                     buffer_row = {
-                        'record_index': index,
-                        'record_path': target_folder,
-                        'record_class': 'nrrd',
-                        'slice_index': slice_index,
-                        'slice_context': slice_context,
-                        'slice_resolution': slice_resolution,
-                        'slice_size': slice_context.shape,
+                        'segmented_record_path': target_folder,
+                        'segmented_slice_context': slice_context,
+                        'segmented_slice_resolution': slice_resolution,
                     }
 
                     rows.append(buffer_row)
