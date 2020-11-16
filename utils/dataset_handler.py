@@ -137,7 +137,8 @@ class DatasetProcessor:
     def run(self):
         nii_records, nrrd_records = self.validate_records()
         nii_rows, nrrd_rows = self.generate_data(nii_paths=nii_records, nrrd_paths=nrrd_records)
-        df = self.create_df(nii_rows, nrrd_rows)
+
+        return self.create_df(nii_rows, nrrd_rows)
 
 
 

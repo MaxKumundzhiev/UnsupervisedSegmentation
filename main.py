@@ -7,7 +7,10 @@
 # github: https://github.com/KumundzhievMaxim
 # -------------------------------------------
 
+
+from model.train_evaluate import
 from utils.dataset_handler import DatasetProcessor
 
 if __name__ == '__main__':
-    DatasetProcessor().run()
+    df = DatasetProcessor().run()
+
